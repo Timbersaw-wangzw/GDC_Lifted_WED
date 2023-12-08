@@ -11,3 +11,5 @@ GPUCache/
 coarse_matrix.m
 cvx-w64/
 SDPT3-4.0/
+motoData/
+Welsch/
