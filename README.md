@@ -1,4 +1,4 @@
-# WES-ICP
+# Robust Featureless Point Clouds Registration Method With Geometry Distance Constraint
 This repository includes the source code of the paper Robust Point Clouds Registration with Point-to-point $l_p$ Distance Constraints in Large-scale Metrology.
 This code was written by MATLAB.
 # Introduction and Usage
