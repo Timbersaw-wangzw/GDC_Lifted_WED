@@ -8,3 +8,6 @@ source_points.mat
 plot/
 data/
 GPUCache/
+coarse_matrix.m
+cvs-w64/
+SDPT3-4.0/
