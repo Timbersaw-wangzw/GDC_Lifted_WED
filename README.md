@@ -1,5 +1,5 @@
 
-# Robust Registration Of Featureless Point Clouds  Method With Geometry Distance Constraint
+# Robust Registration Of Featureless Point Clouds  With Geometry Distance Constraint
 This repository includes the source code of the paper Robust Point Clouds Registration with Point-to-point $l_p$ Distance Constraints in Large-scale Metrology.
 This code was written by MATLAB.
 # Introduction and Usage
