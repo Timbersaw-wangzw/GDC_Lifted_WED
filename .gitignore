@@ -9,5 +9,5 @@ plot/
 data/
 GPUCache/
 coarse_matrix.m
-cvs-w64/
+cvx-w64/
 SDPT3-4.0/
