@@ -5,11 +5,14 @@ coarse_source_points0.67.txt
 target_points.mat
 target_normals.mat
 source_points.mat
+coarse_matrix.m
+SparsePointToPlane1.m
+SparsePointToPlaneGN.m
 plot/
 data/
 GPUCache/
-coarse_matrix.m
 cvx-w64/
 SDPT3-4.0/
 motoData/
 Welsch/
+111.txt
