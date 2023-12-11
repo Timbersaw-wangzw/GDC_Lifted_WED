@@ -6,12 +6,9 @@ addpath('lifted_rep');
 addpath('oobbBox')
 addpath('Initial_Data\')
 addpath('OGVdata\')
-% addpath('RSICP-master\');
-noise_vec=[0,0.0025,0.005,0.01,0.015];
-ratio_vec=[0,0.2,0.3,0.4,0.5];
 
 %% simulation: generate cyclinder Data
-ratio=0.5
+
 load('cylinderData\target_points.mat');
 load('cylinderData\source_points.mat');
 % disType='WES';
@@ -36,11 +33,11 @@ target_points=target_points(1:3,:);
 % [T2,er_vec,et_vec,rmse,method]=liftedICP(source_points,source_normals,target_points,target_normals, ...
 %                                         J,tau2,max_icp, ...
 %                                         disType,robType,T);
-[T2,er_vec,et_vec,rmse,method]=GDCLiftedICP(source_points,target_points,target_normals, ...
-                                O1,O2,d,0.005,...
-                                J,tau2,max_icp, ...
-                                disType,robType,T);
-% [T2,er_vec,et_vec,rmse,method]=RSICP(source_points,target_points,source_normals,target_normals,max_icp,T);
+% [T2,er_vec,et_vec,rmse,method]=GDCLiftedICP(source_points,target_points,target_normals, ...
+%                                 O1,O2,d,0.005,...
+%                                 J,tau2,max_icp, ...
+%                                 disType,robType,T);
+[T2,er_vec,et_vec,rmse,method]=RSICP(source_points,target_points,source_normals,target_normals,max_icp,T);
 result.method=method;
 result.rmse=rmse;
 result.T=T2;
@@ -69,6 +66,8 @@ view(0,0)
 % save("cylinderData\\source_points.mat","source_points");
 % save("cylinderData\\target_points.mat","target_points");
 %% simulation: generate blade data
+noise_vec=[0,0.0025,0.005,0.01,0.015];
+ratio_vec=[0,0.2,0.3,0.4,0.5];
 x=[1,2,3,4,5,6];
 T0=SE3.exp(x);
 % generateBladeData(ratio,T0);
@@ -147,100 +146,3 @@ move_points=T2*source_points;
 plot3(move_points(1,:),move_points(2,:),move_points(3,:),'.','MarkerSize',3,'Color','red');
 % plot3(source_points(1,:),source_points(2,:),source_points(3,:),'.','MarkerSize',2,'Color','red');
 hp=plot3(target_points(1,:),target_points(2,:),target_points(3,:),'.','MarkerSize',3,'Color','#6577B0');
-% % O1=T2*O1;
-% % plot3(O1(1),O1(2),O1(3),'k.','MarkerSize',50);
-% % plot3(O2(1),O2(2),O2(3),'k.','MarkerSize',50);
-% theroy_points=(T1*T0)^-1*source_points;
-% plot3(theroy_points(1,:),theroy_points(2,:),theroy_points(3,:),'r.','MarkerSize',2);
-
-
-
-% ratio= ratio_vec(5);
-% noise_idx=noise_vec(1);
-% load_pts_mat=sprintf('bladeData\\test_points%0.1f.mat',ratio);
-% load_matrix_mat=sprintf('bladeData\\coarse_matrix%0.1f.mat',ratio);
-% load(load_pts_mat)
-% load(load_matrix_mat)
-% 
-% mean_source=mean(test_points(1:3,:)');
-% 
-% source_points=T1*test_points(1:3,:);
-% source_normals=T1.SO3*test_points(4:6,:);
-% data02=importdata('target_points.txt');
-% target_points_normals=data02';
-% target_points=target_points_normals(1:3,:);
-% target_normals=target_points_normals(4:6,:);
-% mean_targe=mean(target_points');
-% % the distance between mean of source and target as the point distance 
-% data00=importdata('Initial_Data\inital_source_points.txt');
-% O1=mean(data00)';
-% O2=mean(target_points')';
-% d=norm(O1-O2);
-% O1=T1*T0*O1;
-% T=T1*T0;
-% %% ICP 
-% J=@disFnc_jacobian_res;
-% % ratio is 0.2 is good for blade
-% tau2=0.02;
-% disType='point_to_plane';
-% robType='Geman_McClure';
-% method='GDC_Lifted';
-% [move_points,T2,er_vec,et_vec,rmse]=GDCLiftedICP(source_points,target_points,target_normals, ...
-%                                 O1,O2,d,...
-%                                 J,tau2,50, ...
-%                                 disType,robType,T);
-% % % 
-% % method='Lifted';
-% % [move_points,T2,er_vec,et_vec,rmse]=liftedICP(source_points,source_normals,target_points,target_normals, ...
-% %                                 J,tau2,50, ...
-% %                                 disType,robType,T1*T0);
-% % method='Sparse';
-% % [move_points,T2,er_vec,et_vec]=SparsePointToPoint(source_points,target_points,50,20,5,0.4,T1*T0);
-% % [move_points,T2,er_vec,et_vec]=SparsePointToPlane(source_points,target_points,target_normals,50,20,5,0.4,T1*T0);
-% % [move_points,T2,er_vec,et_vec]=SparseWeightedDistance(source_points,target_points,target_normals,50,20,5,0.4);
-% figure
-% axis off
-% hold on
-% % plot3(source_points(1,:),source_points(2,:),source_points(3,:),'.','MarkerSize',2,'Color','red');
-% hp=plot3(target_points(1,:),target_points(2,:),target_points(3,:),'.','MarkerSize',2,'Color','#6577B0');
-% % % O1=T2*O1;
-% % % plot3(O1(1),O1(2),O1(3),'k.','MarkerSize',50);
-% % % plot3(O2(1),O2(2),O2(3),'k.','MarkerSize',50);
-% theroy_points=(T1*T0)^-1*source_points;
-% plot3(theroy_points(1,:),theroy_points(2,:),theroy_points(3,:),'r.','MarkerSize',2);
-view(37.8000,67.3809);
-%% calculate alpha recall 
-
-% c=zeros(length(source_points(1,:)),1);
-% for i=1:length(source_points(1,:))
-%     d=norm(move_points(:,i)-theroy_points(:,i));
-%     c(i)=d;
-% end
-% % tiledlayout(2,1)
-% r=sqrt(sum(c.^2)/length(source_points(1,:)));
-% scatter3(move_points(1,:),move_points(2,:),move_points(3,:),20,c,'.');
-% colormap("jet")
-% caxis([0,0.05]);
-% % delete(hp)
-% colorbar('Ticks',0:0.01:0.05,'location','southoutside')
-%% save data recall 
-% result.method=[method,disType];
-% result.noise=noise;
-% result.ratio=ratio;
-% result.rmse=rmse;
-% result.T=T2;
-% result.er_vec=er_vec;
-% result.et_vec=et_vec;
-% result_name=sprintf([method,disType,'_%d_%d'],ratio_idx,noise_idx);
-% assignin('base',result_name,result);
-% save(['bladeData\\resultData\\',result_name,'.mat'],result_name);
-
-% er_name=sprintf([method,disType,'_er_vec_%d'],10*ratio);
-% et_name=sprintf([method,disType,'_et_vec_%d'],10*ratio);
-% assignin('base',er_name,er_vec);
-% assignin('base',et_name,et_vec);
-% % assignin('base',aerr_name,percent_vec);
-% save(['bladeData\\resultData\\',er_name,'.mat'],er_name);
-% save(['bladeData\\resultData\\',et_name,'.mat'],et_name);
-% save(['bladeData\\resultData\\',aerr_name,'.mat'],aerr_name);
-% plotError;
