@@ -2,6 +2,27 @@ function [T,er_vec,et_vec,rmse,method] = GDCLiftedICP(source_points,target_point
     O1,O2,d,delta,...
     J,tau2,max_icp, ...
     disType,robType,TT)
+% GDC-methods
+%   INPUT:
+%   source_points: source point clouds
+%   target_points: target point clouds
+%   target_normals: target point clouds normals
+%   O1: source ball center
+%   O2: target ball center
+%   d: the theoretical distance between O1 and O2 theroitical
+%   delta: the threshold of distance constraint
+%   J: distance metric jaobian and residual function
+%   tau2: parameter in lifted representation
+%   max_icp: maximum iteration number
+%   disType: string of distance metric name
+%   robType: string of robust function name
+%   TT: theroy matrix in simulation for evaluation not exist in real
+%   experiments
+%   OUTPUT:
+%   T: optimal homogenous transformation matrix 
+%   er_vec: vector of rotation error during registration
+%   et_vec: vector of translation error during registration
+%   rmse: vector of rmse during registration
 method=['GDC_Lifted_',disType];
 fprintf(method);
 isSimulation=false;
@@ -13,17 +34,15 @@ T=SE3;
 move_points = source_points;
 rmse=zeros(max_icp,1);
 NS = createns(target_points','NSMethod','kdtree');
-% gamma=1;
-% eta=0.5;
+
 inital_d=norm(O1-O2);
 max_con_iter=floor(max_icp/1.5);
-% linear path
+% ratio of dynamic slack of constraint
 ratio=(d-1e-7-inital_d)/max_con_iter;
+
 er_vec=[];
 et_vec=[];
 tol=1e-7;
-% quadric path WES
-% a=1/(max_icp^2);
 for icp=1:max_icp
     [idx, ~] = knnsearch(NS,move_points','k',1);
     match_points= target_points(:,idx);
@@ -67,7 +86,7 @@ for icp=1:max_icp
         O1=T1*O1;
         fprintf('constraints:%e\n',norm(O1-O2)-d)
         eR=norm(T1.double()-eye(4),"fro");
-        if(eR<1e-4)
+        if(eR<1e-5)
             break;
         end
     end
@@ -87,10 +106,10 @@ for icp=1:max_icp
             break;
         end
     end
-%     eR=norm(T_temp.double()-eye(4),"fro");
-%     if(eR<1e-5)
-%         break;
-%     end
+    eR=norm(T_temp.double()-eye(4),"fro");
+    if(eR<1e-5)
+        break;
+    end
     fprintf('iteration at %d-%d, constraints:%e\n', icp,max_icp,norm(O1-O2)-d)
     if(mod(icp,3)==0)
         tau2=tau2/2;

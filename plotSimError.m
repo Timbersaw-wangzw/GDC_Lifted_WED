@@ -3,7 +3,6 @@
 
 clear
 close all;
-addpath('ZoomPlot-MATLAB-main\')
 
 Files = dir(fullfile('bladeData\\resultData\\*.mat'));
 LengthFiles = length(Files);
