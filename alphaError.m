@@ -11,7 +11,7 @@ end
 all_err=sort(all_err);
 percent_vec=zeros(100,2);
 err_delta=err/100;
-for i=1:99
+for i=1:100
     N=length(find(all_err<err_delta*i));
     percent_vec(i+1,1)=err_delta*i;
     percent_vec(i+1,2)=N/M;

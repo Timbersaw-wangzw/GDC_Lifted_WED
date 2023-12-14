@@ -133,7 +133,7 @@ pose=[0.15 0.18 0.45 0.3];
 % xlabel('iteration number')
 ylabel('$log_10(E_R)$','interpreter','latex')
 title(title1,'FontName','Times New Roman');
-% legend('Location','northwest','NumColumns',6,'FontName','Times New Roman','Box','off')
+legend('Location','northwest','NumColumns',6,'FontName','Times New Roman','Box','off')
 ax1 = axes('Position',pose,'Box','on');
 box on
 hold on

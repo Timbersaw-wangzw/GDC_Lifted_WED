@@ -16,7 +16,7 @@ NS = createns(target_points','NSMethod','kdtree');
 % gamma=1;
 % eta=0.5;
 inital_d=norm(O1-O2);
-max_con_iter=floor(max_icp/2);
+max_con_iter=floor(max_icp/1.5);
 % linear path
 ratio=(d-1e-7-inital_d)/max_con_iter;
 er_vec=[];
