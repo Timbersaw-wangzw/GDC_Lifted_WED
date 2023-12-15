@@ -24,10 +24,10 @@ Simulation data include turbine blade  and cylinder surface stored in `bladeData
 Real data include outlet guide vane  and engine rotor stored in `OGVdata` and `RotorData`
 
 
-![real experiments scene](https://github.com/Timbersaw-wangzw/GDC_Lifted_WED/blob/main/realScene.png#pic_center# =200x200)
+![real experiments scene](https://github.com/Timbersaw-wangzw/GDC_Lifted_WED/blob/main/realScene.png)
 
 You can run directly `simulationICP.m` and `realICP.m` about simulation and real experiments 
 
 
 
-![experiments results](https://github.com/Timbersaw-wangzw/GDC_Lifted_WED/blob/main/results.png#pic_center# =200x200)
+![experiments results](https://github.com/Timbersaw-wangzw/GDC_Lifted_WED/blob/main/results.png)
