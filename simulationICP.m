@@ -78,12 +78,12 @@ if strcmp(scene,'bladeData')
     for ni=1:1
         for ri=5:5
             clearvars -except ni ri T0 ratio_vec noise_vec
-            max_icp=50;
-    %         disType='WES';
+            max_icp=100;
+            disType='WED';
             robType='Geman_McClure';
     %         disType='point_to_point';
-            disType='point_to_plane';
-    %         disType='symmetric';
+%             disType='point_to_plane';
+%             disType='symmetric';
             %% load data
             ratio = ratio_vec(ri);
             noise= noise_vec(ni);
@@ -118,7 +118,6 @@ if strcmp(scene,'bladeData')
             end
             %% ICP 
             J=@disFnc_jacobian_res;
-            % ratio is 0.2 is good for blade
             tau2=0.02;
     %         [T2,er_vec,et_vec,rmse,method]=GDCLiftedICP(source_points,target_points,target_normals, ...
     %                                         O1,O2,d,noise,...

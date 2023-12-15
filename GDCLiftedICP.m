@@ -49,7 +49,7 @@ for icp=1:max_icp
     match_normals=target_normals(:,idx);
     T_temp=SE3;
     for inner=1:max_icp
-        if  ~strcmp(disType,'WES')
+        if  ~strcmp(disType,'WED')
             [A0,b0]=Lifted_Rep(move_points,match_points,match_normals,J,tau2,disType,robType);
         else
             w_pTp=exp((icp-max_icp)/2);

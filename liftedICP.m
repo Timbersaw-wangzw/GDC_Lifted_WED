@@ -22,14 +22,15 @@ for icp=1:max_icp
     match_normals=target_normals(:,idx);
     fprintf('iteration at %d-%d\n', icp,max_icp)
     if strcmp(disType,'symmetric')
-        mean_match_points=mean(match_points')';
-        mean_move_points=mean(move_points')';
+        mean_match_points=mean(match_points,2);
+        mean_move_points=mean(move_points,2);
+
         temp_match_points=match_points-mean_match_points;
         temp_move_points=move_points-mean_move_points;
         temp_normals=move_normals+match_normals;
     end
     if ~strcmp(disType,'symmetric')
-        if  ~strcmp(disType,'WES')
+        if  ~strcmp(disType,'WED')
             [A0,b0]=Lifted_Rep(move_points,match_points,match_normals,J,tau2,disType,robType);
         else
             w_pTp=exp((icp-max_icp)/2);
@@ -43,25 +44,14 @@ for icp=1:max_icp
     else
         [A0,b0]=Lifted_Rep(temp_move_points,temp_match_points,temp_normals,J,tau2,disType,robType);
         x=A0\(-b0);
-        a=x(1:3);
-        t=x(4:6);
-        theta=atan(norm(a));
-        a=a/norm(a);
-        Rtmp=angvec2r(theta,a);
-        R=Rtmp*Rtmp;
-        t1=-1*mean_move_points;
-        t2=cos(theta)*t;
-        t3=mean_match_points;
-        t=(Rtmp*Rtmp*t1)+(Rtmp*t2)+t3;
-        T1=SE3(R,t);
+        rot = x(1:3); trans = x(4:6);
+        rotangle = norm(rot);
+        TR = rotation_matrix(rotangle, rot);
+        trans = trans + mean_match_points - TR(1:3,1:3) * mean_move_points;
+        T1 = SE3([TR(1:3,1:3) trans; 0 0 0 1]);
+        move_normals=T1.SO3*move_normals;
     end
     move_points=T1*move_points;
-    if strcmp(disType,'symmetric')
-        move_normals=T1.SO3*move_normals;
-        mean_move_points=T1*mean_move_points;
-        temp_move_points=move_points-mean_move_points;
-        temp_normals=move_normals+match_normals;
-    end
     T=T1*T;
     e=norm(T1.double()-eye(4),'fro');
     if(e<1e-5)

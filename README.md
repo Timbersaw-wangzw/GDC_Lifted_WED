@@ -1,30 +1,28 @@
 
 # Robust Registration Of Featureless Point Clouds  With Geometry Distance Constraint
-This repository includes the source code of the paper Robust Point Clouds Registration with Point-to-point $l_p$ Distance Constraints in Large-scale Metrology.
+This repository includes the source code of the paper Robust Registration Of Featureless Point Clouds With Geometry Distance Constraint
 This code was written by MATLAB.
 # Introduction and Usage
 This program includes three algorithms:
 ```
 1. sparse point to point
 2. sparse point to plane
-3. ours(WES-ICP)
+3. sparse WED
+4. robust symmetric
+5. lifted point-to-point 
+6. lifted point-to-plane 
+7. lifted WED 
+8. GDC-lifted-point-to-plane
+9. (ours)GDC-lifted-WED
 ```
-The directory `github_repo` is the lie algebra library. Moreover, the function `createns` and `knnsearch` in our source files need `Statistics and Machine Learning Toolbox` in MATLAB.
+The directory `github_repo` is lie algebra library. 
+The function 'linspecer.m' can generate distinguishable colors to plot, which can download [at](https://ww2.mathworks.cn/matlabcentral/fileexchange/42673-beautiful-and-distinguishable-line-colors-colormap) 
+The function `createns` and `knnsearch` in our source files need `Statistics and Machine Learning Toolbox` in MATLAB.
 
-The program includes the following three source point clouds and the same target point clouds.
-Those source point clouds have been coarse transformed, but they have different overlapping areas between target point clouds.
-```
-source point clouds:
-- coarse_source_points0.70.txt
-- coarse_source_points0.6.txt
-- coarse_source_points0.5.txt
-target point clouds:
-- target points.txt
-```
+We share our simulation and real data in registration.
+Simulation data include turbine blade  and cylinder surface stored in `bladeData` and `cylinderData`
+Real data include outlet guide vane  and engine rotor stored in `OGVdata` and `RotorData`
 
 
+you can run directly `simulationICP.m` and `realICP.m` to run simulation
 
-Our **WES-ICP** can restrain the sliding and escape the local minima. Specifically, **sparse point to point** is easily trapped into local minima and **sparse point-to-plane** slides along the tangent space. 
-you can run directly `mainICP.m` to see those phenomenons shown below.
-
-![results](https://github.com/Timbersaw-wangzw/WES-ICP-M/blob/master/result.jpg)

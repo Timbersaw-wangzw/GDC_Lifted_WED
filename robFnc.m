@@ -1,5 +1,5 @@
 classdef robFnc<handle
-    properties   %属性
+    properties   
         method
         e2
         tau2
@@ -9,7 +9,7 @@ classdef robFnc<handle
         dkappa
         loss
     end
-    methods   %方法
+    methods   
         function obj=robFnc(e2,tau2,m)
             obj.e2=e2;
             obj.tau2=tau2;
@@ -33,7 +33,7 @@ function Geman_McClure(obj)
     w=sqrt(2*m_d_tau2/(m_d_e2+m_d_tau)^2);
     obj.loss=m_d_tau*m_d_e2/(m_d_tau+m_d_e2);
     obj.omega=w;
-    obj.omega2=w*2;
+    obj.omega2=w^2;
     obj.kappa=sqrt(m_d_tau)*(w - sqrt(2));
     obj.dkappa=sqrt(m_d_tau);
 end

@@ -8,6 +8,9 @@ switch method
     case 'point_to_plane'
         J=[ni;1]'*hat;
         res=(pi-qi)'*ni;
-
+    case 'symmetric'
+        ci = cross(pi,ni);
+        J=[ci', ni'];
+        res=(pi-qi)'*ni;
 end
 

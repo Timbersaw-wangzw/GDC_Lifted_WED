@@ -8,7 +8,7 @@ switch disType
     case 'point_to_plane'
         A=zeros(6,6);
         res=zeros(6,1);
-    case 'WES'
+    case 'WED'
         A=zeros(6,12);
         res=zeros(6,2);
     case 'symmetric'
@@ -45,14 +45,11 @@ function [Qi,res_i]=lifted_J(source_point,target_point,target_noromal,disType)
     wJi=omega*Ji;
     half_B=eye(m)-dkk*ri*ri';
     Qi=half_B*wJi;
-    if isnan(Qi)
-        x=0;
-    end
     a1=r2 + 2 * dKappa * kappa;
     res_i=wJi'*omega * (1 - a1 * inv_dkk) * ri;
 end
 for i=1:N
-    if  ~strcmp(disType,'WES')
+    if  ~strcmp(disType,'WED')
         [Qi,res_i]=lifted_J(source_points(:,i),target_points(:,i),target_noromals(:,i),disType);
         A=A+Qi'*Qi;
         res=res+res_i;

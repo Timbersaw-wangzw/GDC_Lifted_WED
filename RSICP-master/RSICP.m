@@ -43,7 +43,7 @@ for i=1:max_icp
 %     if abs(u1-u2)<1e-6
 %         break;
 %     end
-    if(mod(i,3)==0)
+    if(mod(i,4)==0)
         u1 = u1/2;
     end
     if u1<u2

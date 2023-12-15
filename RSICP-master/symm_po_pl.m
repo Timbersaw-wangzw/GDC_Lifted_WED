@@ -7,8 +7,10 @@ meanp2 = mean(p2,2);
 p1 = p1-meanp1;
 p2 = p2-meanp2;
 
-n = n1+n2;
 
+
+
+n = n1+n2;
 c = cross(p1,n);
 d = p2-p1;
 
@@ -20,15 +22,11 @@ A = A.*wm;
 b = b.*w2';
 AA = A'*A;
 Ab = A'*b;
-tic
+
 [U,S,V] = svd(AA);
 S1 = inv(S);
 x = U*S1*U'*Ab;
-t1 = toc;
 
-tic
-aaa=AA\Ab;
-t2 = toc;
 rot = x(1:3); trans = x(4:6);
 rotangle = norm(rot);
 TR = rotation_matrix(rotangle, rot);

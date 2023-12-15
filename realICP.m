@@ -3,6 +3,7 @@ clc
 clear
 addpath('github_repo');
 addpath('RSICP-master');
+addpath("RotorData");
 % scene='OGVData';
 scene='RotorData';
 %% real point clouds of OGV
