@@ -14,3 +14,7 @@ data/
 GPUCache/
 cvx-w64/
 SDPT3-4.0/
+roto_fix_pts.ply
+roto_move_pts.ply
+!*.asv
+Initial_Data/
