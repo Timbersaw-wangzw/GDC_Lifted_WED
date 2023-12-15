@@ -26,7 +26,8 @@ Real data include outlet guide vane  and engine rotor stored in `OGVdata` and `R
 
 ![real experiments scene](https://github.com/Timbersaw-wangzw/GDC_Lifted_WED/blob/main/realScene.png)
 
-You can run directly `simulationICP.m` and `realICP.m` about simulation and real experiments 
+You can run directly `simulationICP.m` and `realICP.m` about simulation and real experiments.
+There are some registration results shown below  
 
 
 
