@@ -1,7 +1,7 @@
 
 # Robust Registration Of Featureless Point Clouds  With Geometry Distance Constraint
-This repository includes the source code of the paper Robust Registration Of Featureless Point Clouds With Geometry Distance Constraint
-This code was written by MATLAB.
+This repository includes the source code of the paper Robust Registration Of Featureless Point Clouds With Geometry Distance Constraint.
+This code was written in MATLAB.
 # Introduction and Usage
 This program includes three algorithms:
 ```
