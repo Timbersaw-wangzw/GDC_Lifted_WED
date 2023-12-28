@@ -1,4 +1,4 @@
-function [T,er_vec,et_vec,rmse]= SparsePointToPoint(source_points,target_points,max_icp,max_outer,max_inner,p,TT)
+function [T,er_vec,et_vec,rmse,method]= SparsePointToPoint(source_points,target_points,max_icp,max_outer,max_inner,p,TT)
 %SPARSE_POINT_TO_POINT sparse point to point
 %   INPUT:
 %   source_points: source point clouds

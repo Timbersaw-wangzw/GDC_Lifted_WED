@@ -72,27 +72,27 @@ et_err_vec=[et_err_vec,welsch_ptp_et,welsch_ptpln_et];
 rmse_err_vec=[rmse_err_vec,welsch_ptp_rmse,welsch_ptpln_rmse];
 all_method_names=[all_method_names,'Welsch-ptp','Welsch-ptpln'];
 
-ratio_values={'0','0.2','0.3','0.4','0.5'};
+ratio_values={'0.18','0.25','0.31','0.37','0.44'};
 % ratio_values=flip(ratio_values);
 noise_values={'0.001','0.025','0.005','0.01','0.015'};
 % matirx color map
-% for i=1:length(all_M)
-%     all_M(i).method
-% %     if ~strcmp(all_M(i).method,'GDC-Lifted-WED')
-% %         continue;
-% %     end
-%     figure;
-%     h=heatmap(noise_values,ratio_values,all_M(i).M);
-%     h.XLabel = 'noisy level'; 
-%     h.YLabel = 'Downsample ratio';
-%     h.Title=all_M(i).method;
-%     h.FontSize=16;
-%     colormap("jet");
-%     caxis([0,0.05]);
-% end
-% title1=sprintf('rotation error at ratio:%.1f',ratio);
-% title2=sprintf('translation error at ratio:%.1f',ratio);
-% title3=sprintf('rmse at ratio:%.1f',ratio);
+for i=1:length(all_M)
+    all_M(i).method
+%     if ~strcmp(all_M(i).method,'GDC-Lifted-WED')
+%         continue;
+%     end
+    figure;
+    h=heatmap(noise_values,ratio_values,all_M(i).M);
+%     h.XLabel = 'Noisy level'; 
+%     h.YLabel = 'Overlapping ratio';
+    h.Title=all_M(i).method;
+    h.FontSize=16;
+    colormap("jet");
+    caxis([0,0.05]);
+end
+title1=sprintf('rotation error at ratio:%.1f',ratio);
+title2=sprintf('translation error at ratio:%.1f',ratio);
+title3=sprintf('rmse at ratio:%.1f',ratio);
 %%  error cureve
 title1='rotation error';
 title2='translation error';

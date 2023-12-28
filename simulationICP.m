@@ -5,7 +5,7 @@ close all
 addpath('github_repo');
 addpath('oobbBox')
 addpath('Initial_Data\')
-
+addpath('RSICP-master\')
 % scene='cylinderData';
 scene='bladeData';
 %% simulation: generate cyclinder Data
@@ -30,14 +30,15 @@ if strcmp(scene,'cylinderData')
     
     target_normals=target_points(4:6,:);
     target_points=target_points(1:3,:);
+    [T2,er_vec,et_vec,rmse,method]=SparseWeightedDistance(source_points,target_points,target_normals,max_icp,20,5,0.1,T);
     % [source_points,source_normals,target_points,target_normals,T,O1,O2,d]=generateCylinderData(ratio);
     % [T2,er_vec,et_vec,rmse,method]=liftedICP(source_points,source_normals,target_points,target_normals, ...
     %                                         J,tau2,max_icp, ...
     %                                         disType,robType,T);
-    [T2,er_vec,et_vec,rmse,method]=GDCLiftedICP(source_points,target_points,target_normals, ...
-                                    O1,O2,d,0.005,...
-                                    J,tau2,max_icp, ...
-                                    disType,robType,T);
+%     [T2,er_vec,et_vec,rmse,method]=GDCLiftedICP(source_points,target_points,target_normals, ...
+%                                     O1,O2,d,0.005,...
+%                                     J,tau2,max_icp, ...
+%                                     disType,robType,T);
 %     [T2,er_vec,et_vec,rmse,method]=RSICP(source_points,target_points,source_normals,target_normals,max_icp,T);
     result.method=method;
     result.rmse=rmse;
@@ -56,10 +57,10 @@ if strcmp(scene,'cylinderData')
     plot3(O3(1),O3(2),O3(3),'k.','MarkerSize',50);
     move_points=T2*source_points;
     truth=inv(T)*source_points;
-    plot3(move_points(1,:),move_points(2,:),move_points(3,:),'.','MarkerSize',4,'Color','red');
+    plot3(move_points(1,:),move_points(2,:),move_points(3,:),'.','MarkerSize',5,'Color','red');
     % plot3(truth(1,:),truth(2,:),truth(3,:),'.','MarkerSize',5,'Color','r');
     % plot3(source_points(1,:),source_points(2,:),source_points(3,:),'.','MarkerSize',5,'Color','red');
-    hp=plot3(target_points(1,:),target_points(2,:),target_points(3,:),'.','MarkerSize',4,'Color','#6577B0');
+    hp=plot3(target_points(1,:),target_points(2,:),target_points(3,:),'.','MarkerSize',5,'Color','#6577B0');
     view(22,31)
 %     view(0,0)
 end
@@ -75,10 +76,10 @@ if strcmp(scene,'bladeData')
     T0=SE3.exp(x);
     % generateBladeData(ratio,T0);
     Z=zeros(5,5);
-    for ni=1:1
-        for ri=5:5
+    for ni=1:5
+        for ri=1:5
             clearvars -except ni ri T0 ratio_vec noise_vec
-            max_icp=100;
+            max_icp=50;
             disType='WED';
             robType='Geman_McClure';
     %         disType='point_to_point';
@@ -123,11 +124,11 @@ if strcmp(scene,'bladeData')
     %                                         O1,O2,d,noise,...
     %                                         J,tau2,max_icp, ...
     %                                         disType,robType,T);
-            [T2,er_vec,et_vec,rmse,method]=liftedICP(source_points,source_normals,target_points,target_normals, ...
-                                            J,tau2,max_icp, ...
-                                            disType,robType,T);
+%             [T2,er_vec,et_vec,rmse,method]=liftedICP(source_points,source_normals,target_points,target_normals, ...
+%                                             J,tau2,max_icp, ...
+%                                             disType,robType,T);
 %             [T2,er_vec,et_vec,rmse,method]=RSICP(source_points,target_points,source_normals,target_normals,max_icp,T);
-    %         [T2,er_vec,et_vec,rmse,method]=SparsePointToPoint(source_points,target_points,max_icp,20,5,0.4,T1*T0);
+            [T2,er_vec,et_vec,rmse,method]=SparsePointToPoint(source_points,target_points,max_icp,20,5,0.4,T1*T0);
 %             [T2,er_vec,et_vec,rmse,method]=SparsePointToPlane(source_points,target_points,target_normals,max_icp,20,5,0.1,T);
 %             [T2,er_vec,et_vec,rmse,method]=SparseWeightedDistance(source_points,target_points,target_normals,max_icp,20,5,0.1,T);
             result.method=method;
