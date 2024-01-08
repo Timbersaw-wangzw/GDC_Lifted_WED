@@ -1,7 +1,8 @@
 clear
 close all
-real_name='motoRoto';
-% real_name='OGVdata'
+addpath('motoRoto')
+% real_name='motoRoto';
+real_name='OGVdata'
 load([real_name,'\test_points.mat']);
 load([real_name,'\target_points.mat']);
 load([real_name,'\coarse_matrix.mat']);
@@ -18,7 +19,7 @@ target_points=target_points(1:3,:);
 C = linspecer(LengthFiles);
 % figure;
 
-tiledlayout(1,2,'TileSpacing','compact','Padding','tight');
+tiledlayout(2,1,'TileSpacing','compact','Padding','tight');
 nexttile
 hold on 
 box on

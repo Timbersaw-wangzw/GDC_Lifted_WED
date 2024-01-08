@@ -4,8 +4,8 @@ clear
 addpath('github_repo');
 addpath('RSICP-master');
 addpath("RotorData");
-% scene='OGVData';
-scene='RotorData';
+scene='OGVData';
+% scene='RotorData';
 %% real point clouds of OGV
 load([scene,'\\test_points.mat']);
 load([scene,'\\target_points.mat']);
@@ -24,6 +24,12 @@ source_points=test_points(1:3,:);
 source_normals=test_points(4:6,:);
 target_normals=target_points(4:6,:);
 target_points=target_points(1:3,:);
+
+% source_pts=pointCloud(single(source_points)');
+% target_pts=pointCloud(single(target_points)');
+% target_pts.Normal=single(target_normals)';
+% pcwrite(source_pts,'OGVdata/source_points.ply');
+% pcwrite(target_pts,'OGVdata/target_points.ply');
 % T1 is the coarse matrix
 source_points=T1*source_points;
 source_normals=T1.SO3*source_normals;
@@ -33,23 +39,24 @@ d=400;
 %% ICP 
 % jacobian and residual of distance metrics
 J=@disFnc_jacobian_res;
-tau2=1;
-disType='WES';
+max_icp=20;
+tau2=10;
+disType='WED';
 % disType='point_to_plane';
 % disType='point_to_point';
 robType='Geman_McClure';
 % GDC methods
 % [T2,~,~,~,method]=GDCLiftedICP(source_points,target_points,target_normals, ...
 %                                 O1,O2,d,1e-6,...
-%                                 J,tau2,20, ...
+%                                 J,tau2,max_icp, ...
 %                                 disType,robType);
 % robust symmetric 
-% [T2,~,~,~,method]=RSICP(source_points,target_points,source_normals,target_normals,1000);
+% [T2,~,~,~,method]=RSICP(source_points,target_points,source_normals,target_normals,100);
 % 
 % lifted representation
-[T2,~,~,~,method]=liftedICP(source_points,source_normals,target_points,target_normals, ...
-                                J,tau2,50, ...
-                                disType,robType);
+% [T2,~,~,~,method]=liftedICP(source_points,source_normals,target_points,target_normals, ...
+%                                 J,tau2,50, ...
+%                                 disType,robType);
 % sparse point-to-point
 % [T2,er_vec,et_vec]=SparsePointToPoint(source_points,target_points,50,20,5,0.1);
 % sparse point-to-plane
@@ -58,9 +65,15 @@ robType='Geman_McClure';
 % [T2,er_vec,et_vec]=SparseWeightedDistance(source_points,target_points,target_normals,50,20,5,0.1);
 
 %% store the results for alpha-recall
-result.T=T2;
-assignin('base',method,result);
-save([scene,'\resultData\',method,'.mat'],method);
+% result.T=T2;
+% assignin('base',method,result);
+% save([scene,'\resultData\',method,'.mat'],method);
+T2=SE3([     0.990972     0.134064  -0.00146988      20.6146;
+   -0.134069     0.990813   -0.0177415     0.742839;
+-0.000922131    0.0177784     0.999842      2.77858;
+           0            0            0            1;
+
+]);
 move_points=T2*source_points;
 %% plot results
 figure
@@ -68,7 +81,7 @@ axis off
 hold on
 % plot3(source_points(1,:),source_points(2,:),source_points(3,:),'r.','MarkerSize',2.5);
 plot3(target_points(1,:),target_points(2,:),target_points(3,:),'.','MarkerSize',3,'Color','#6577B0');
-% OGV O1 and O2
+% % OGV O1 and O2
 O1=T1*[85.581;129.744;894.246];
 O2=[20.949;139.022;891.872];
 % rotor O1 and O2

@@ -18,9 +18,11 @@ function generateData(ratio,T)
     test_points=T*filter_points;
 %     test_points=filter_points;
     move_pts=pointCloud(test_points');
+    n=pcnormals(move_pts);
+    test_points=[test_points;n'];
     str_e1 = sprintf('bladeData\\test_points%0.1f.mat',ratio);
-    str_e2 = sprintf('bladeData\\move_pts%0.1f.ply',ratio);
-    pcwrite(move_pts,str_e2);
+%     str_e2 = sprintf('bladeData\\move_pts%0.1f.ply',ratio);
+%     pcwrite(move_pts,str_e2);
     save(str_e1,"test_points");
 %     
     hold on

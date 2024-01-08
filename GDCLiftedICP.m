@@ -24,17 +24,17 @@ function [T,er_vec,et_vec,rmse,method] = GDCLiftedICP(source_points,target_point
 %   et_vec: vector of translation error during registration
 %   rmse: vector of rmse during registration
 method=['GDC_Lifted_',disType];
-fprintf(method);
+fprintf([method,'\n']);
 isSimulation=false;
 if nargin==13
     isSimulation=true;
     theroy_points=(TT)^-1*source_points;
+    
 end
 T=SE3;
 move_points = source_points;
-rmse=zeros(max_icp,1);
 NS = createns(target_points','NSMethod','kdtree');
-
+rmse=[];
 inital_d=norm(O1-O2);
 max_con_iter=floor(max_icp/1.5);
 % ratio of dynamic slack of constraint
@@ -48,7 +48,7 @@ for icp=1:max_icp
     match_points= target_points(:,idx);
     match_normals=target_normals(:,idx);
     T_temp=SE3;
-    for inner=1:max_icp
+    for inner=1:10
         if  ~strcmp(disType,'WED')
             [A0,b0]=Lifted_Rep(move_points,match_points,match_normals,J,tau2,disType,robType);
         else
@@ -71,6 +71,7 @@ for icp=1:max_icp
                 lb=max([new_d,lb_d]);
             end
         end
+%         lb=d-tol;% no dynamic lack
         ub=d+delta;
         fun=@(x)quadric_f(x,A0,b0);
         nonlcon=@(x)quadric_con(x,ub,A1,b1,lb);
@@ -78,18 +79,22 @@ for icp=1:max_icp
         'SpecifyObjectiveGradient',true,'SpecifyConstraintGradient',true, ...
         'HessianFcn',@(x,lambda) hessianfcn(x,lambda,A0,A1), ...
         'Display','none');
+%         t1=cputime;
         x = fmincon(fun,zeros(6,1),[],[],[],[],[],[],nonlcon,options);
+%         t2=cputime;
+%         t=t2-t1;
         T1=SE3.exp(x);
         T_temp=T1*T_temp;
         T=T1*T;
         move_points=T1*move_points;
         O1=T1*O1;
         fprintf('constraints:%e\n',norm(O1-O2)-d)
-        eR=norm(T1.double()-eye(4),"fro");
-        if(eR<1e-5)
+        e2=norm(T1.double()-eye(4),"fro");
+        if(e2<1e-5)
             break;
         end
     end
+    e1=norm(T_temp.double()-eye(4),"fro");
     if isSimulation
         eR=SO3(T*TT).double();
         t=transl(T*TT);
@@ -101,29 +106,17 @@ for icp=1:max_icp
         for i=1:length(source_points(1,:))
             c(i)=norm(move_points(:,i)-theroy_points(:,i));
         end
-        rmse(icp,1)=sqrt(sum(c.^2)/length(source_points(1,:)));
-        if (er<1e-5&&et<1e-5)
-            break;
-        end
-    end
-    eR=norm(T_temp.double()-eye(4),"fro");
-    if(eR<1e-5)
-        break;
+        r=sqrt(sum(c.^2)/length(source_points(1,:)));
+        rmse=[rmse;r];
     end
     fprintf('iteration at %d-%d, constraints:%e\n', icp,max_icp,norm(O1-O2)-d)
-    if(mod(icp,3)==0)
+    if(mod(icp,2)==0)
         tau2=tau2/2;
     end
+
 end
 fprintf("constraints error is:%e\n",norm(O1-O2)-d);
 if isSimulation
-    eR=SO3(T*TT).double();
-    t=transl(T*TT);
-    er=(trace(eR)-1)/2;
-    et=norm(t);
-    er=acos(er);
-    er_vec=[er_vec;er];
-    et_vec=[et_vec;et];
     fprintf("final rotation error is:%e\n",er);
     fprintf("final translation error is:%e\n",et);
 end

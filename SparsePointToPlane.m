@@ -13,7 +13,7 @@ function [T,er_vec,et_vec,rmse,method] = SparsePointToPlane(source_points,target
 %   OUTPUT:
 %   move_points: final results
 %   T: optimal homogenous transformation matrix 
-method='Sparsepoint_to_plane';
+method='Sparse_point_to_plane';
 fprintf(method);
 isSimulated=true;
 if nargin==7
@@ -44,10 +44,11 @@ rmse=[];
 % fileID = fopen('normals.txt','w');
 % fprintf(fileID,'%.9f %.9f %.9f\n',TargetNormals);
 for icp=1:max_icp
-    [idx, ~] = knnsearch(NS,move_points','k',1);
+    [idx, ~]  = knnsearch(NS,move_points','k',1);
     match_normals=target_normals(:,idx);
     match_points= target_points(:,idx);
     fprintf('iteration at %d-%d\n', icp,max_icp);
+
     for i=1:max_outer
         for j=1:max_inner
             for k=1:length(idx)
@@ -99,10 +100,8 @@ for icp=1:max_icp
         for i=1:length(source_points(1,:))
             c(i)=norm(move_points(:,i)-theroy_points(:,i));
         end
-        rmse(icp,1)=sqrt(sum(c.^2)/length(source_points(1,:)));
-        if (er<1e-5&&et<1e-5)
-            break;
-        end
+        r=sqrt(sum(c.^2)/length(source_points(1,:)));
+        rmse=[rmse;r];
     end
 end
 % fprintf("final rotation error is:%e\n",er);

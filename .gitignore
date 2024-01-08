@@ -9,6 +9,7 @@ coarse_matrix.m
 SparsePointToPlane1.m
 SparsePointToPlaneGN.m
 LiftedICPGroup.m
+simulationICP1.m
 plot/
 data/
 GPUCache/

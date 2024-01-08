@@ -39,6 +39,7 @@ mu=10;
 T=SE3;
 et_vec=[];
 er_vec=[];
+rmse=[];
 for icp=1:max_icp
     [idx, ~] = knnsearch(NS,move_points','k',1);
     match_normals=target_normals(:,idx);
@@ -83,6 +84,7 @@ for icp=1:max_icp
             if dual_max <1e-5
                 break;
             end
+            
         end
         delta_pTp=move_points-match_points-Z_pTp;
         prime_max=0;
@@ -112,12 +114,9 @@ for icp=1:max_icp
         for i=1:length(source_points(1,:))
             c(i)=norm(move_points(:,i)-theroy_points(:,i));
         end
-        rmse(icp,1)=sqrt(sum(c.^2)/length(source_points(1,:)));
-        if (er<1e-5&&et<1e-5)
-            break;
-        end
+        r=sqrt(sum(c.^2)/length(source_points(1,:)));
+        rmse=[rmse;r];
     end
-
 end
 if isSimulated
     fprintf("final rotation error is:%e\n",er);

@@ -59,6 +59,20 @@ for icp=1:max_icp
                 end
             end
             old_points=move_points;
+            if isSimulated
+                eR=SO3(T*TT).double();
+                t=transl(T*TT);
+                er=(trace(eR)-1)/2;
+                et=norm(t);
+                er=acos(er);
+                er_vec=[er_vec;er];
+                et_vec=[et_vec;et];
+                for i=1:length(source_points(1,:))
+                    c(i)=norm(move_points(:,i)-theroy_points(:,i));
+                end
+                r=sqrt(sum(c.^2)/length(source_points(1,:)));
+                rmse=[rmse;r];
+            end        
             if dual_max <1e-5
                 break;
             end
@@ -71,6 +85,7 @@ for icp=1:max_icp
                 prime_max=prime;
             end
         end
+        
         lambda=lambda+mu*delta;
         if dual_max <1e-5 && prime_max<1e-5
             break;

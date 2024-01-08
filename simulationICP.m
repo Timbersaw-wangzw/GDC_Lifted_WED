@@ -1,18 +1,19 @@
-%simulation on cylinder ruled surface and turbine blade
 clc
 clear all
 close all
 addpath('github_repo');
 addpath('oobbBox')
 addpath('Initial_Data\')
+addpath('OGVdata\')
+addpath('bladeData\')
 addpath('RSICP-master\')
-% scene='cylinderData';
-scene='bladeData';
+scene='cylinderData';
+% scene='bladeData';
 %% simulation: generate cyclinder Data
 if strcmp(scene,'cylinderData')
     load('cylinderData\target_points.mat');
     load('cylinderData\source_points.mat');
-    % disType='WES';
+    % disType='WED';
     robType='Geman_McClure';
     % disType='point_to_point';
     disType='point_to_plane';
@@ -30,7 +31,6 @@ if strcmp(scene,'cylinderData')
     
     target_normals=target_points(4:6,:);
     target_points=target_points(1:3,:);
-    [T2,er_vec,et_vec,rmse,method]=SparseWeightedDistance(source_points,target_points,target_normals,max_icp,20,5,0.1,T);
     % [source_points,source_normals,target_points,target_normals,T,O1,O2,d]=generateCylinderData(ratio);
     % [T2,er_vec,et_vec,rmse,method]=liftedICP(source_points,source_normals,target_points,target_normals, ...
     %                                         J,tau2,max_icp, ...
@@ -40,14 +40,16 @@ if strcmp(scene,'cylinderData')
 %                                     J,tau2,max_icp, ...
 %                                     disType,robType,T);
 %     [T2,er_vec,et_vec,rmse,method]=RSICP(source_points,target_points,source_normals,target_normals,max_icp,T);
-    result.method=method;
-    result.rmse=rmse;
-    result.T=T2;
-    result.er_vec=er_vec;
-    result.et_vec=et_vec;
-    result_name=method;
-    assignin('base',result_name,result);
-    save(['cylinderData\\',result_name,'.mat'],result_name);
+%     result.method=method;
+%     result.rmse=rmse;
+%     result.T=T2;
+%     result.er_vec=er_vec;
+%     result.et_vec=et_vec;
+%     result_name=method;
+%     assignin('base',result_name,result);
+%     save(['cylinderData\\',result_name,'.mat'],result_name);
+    load("cylinderData\GDC_Lifted_point_to_plane.mat")
+    T2=GDC_Lifted_point_to_plane.T;
     figure
     axis off
     hold on
@@ -57,99 +59,120 @@ if strcmp(scene,'cylinderData')
     plot3(O3(1),O3(2),O3(3),'k.','MarkerSize',50);
     move_points=T2*source_points;
     truth=inv(T)*source_points;
-    plot3(move_points(1,:),move_points(2,:),move_points(3,:),'.','MarkerSize',5,'Color','red');
+    plot3(move_points(1,:),move_points(2,:),move_points(3,:),'.','MarkerSize',4,'Color','red');
     % plot3(truth(1,:),truth(2,:),truth(3,:),'.','MarkerSize',5,'Color','r');
     % plot3(source_points(1,:),source_points(2,:),source_points(3,:),'.','MarkerSize',5,'Color','red');
-    hp=plot3(target_points(1,:),target_points(2,:),target_points(3,:),'.','MarkerSize',5,'Color','#6577B0');
+    hp=plot3(target_points(1,:),target_points(2,:),target_points(3,:),'.','MarkerSize',4,'Color','#6577B0');
     view(22,31)
 %     view(0,0)
 end
-
+% source_points=[source_points;source_normals];
+% target_points=[target_points;target_normals];
+% save("cylinderData\\source_points.mat","source_points");
+% save("cylinderData\\target_points.mat","target_points");
 %% simulation: generate blade data
 if strcmp(scene,'bladeData')
-    % different levels of noise
-    noise_vec=[0,0.0025,0.005,0.01,0.015];
-    % different ratios. The lower ratio has fewer overlapping ratio 
+    noise_vec=[0.001,0.0025,0.005,0.01,0.015];
     ratio_vec=[0,0.2,0.3,0.4,0.5];
-
+    tau2_vec=fliplr([0.001,0.02,0.1,1,10]);
     x=[1,2,3,4,5,6];
     T0=SE3.exp(x);
     % generateBladeData(ratio,T0);
     Z=zeros(5,5);
-    for ni=1:5
-        for ri=1:5
-            clearvars -except ni ri T0 ratio_vec noise_vec
+    for ni=5:5
+        for ri=1:1
+            clearvars -except ni ri T0 ratio_vec noise_vec tau2_vec
             max_icp=50;
             disType='WED';
             robType='Geman_McClure';
-    %         disType='point_to_point';
+%             disType='point_to_point';
 %             disType='point_to_plane';
 %             disType='symmetric';
             %% load data
             ratio = ratio_vec(ri);
             noise= noise_vec(ni);
-            %load source points
-            load_pts_mat=sprintf('bladeData\\test_points%0.1f.mat',ratio);
-            %load coarse matrix
+            load_source_points=sprintf('bladeData\\%d%d_source.mat',ni,ri);
+            load_target_points=sprintf('bladeData\\%d%d_target.mat',ni,ri);
+            load(load_source_points)
+            load(load_target_points)
+
+            source_normals=source_points(4:6,:);
+            source_points=source_points(1:3,:);
+            target_normals=target_points(4:6,:);
+            target_points=target_points(1:3,:);
+            %% calculate prior distance
+%             load_pts_mat=sprintf('bladeData\\test_points%0.1f.mat',ratio);
             load_matrix_mat=sprintf('bladeData\\coarse_matrix%0.1f.mat',ratio);
-            load(load_pts_mat)
+%             load(load_pts_mat)
             load(load_matrix_mat)
-            
-            mean_source=mean(test_points(1:3,:)');
-            source_points=T1*test_points(1:3,:);
-            source_normals=T1.SO3*test_points(4:6,:);
-            data02=importdata('bladeData\\target_points.txt');
-            target_points_normals=data02';
-            target_points=target_points_normals(1:3,:);
-            target_normals=target_points_normals(4:6,:);
-            mean_targe=mean(target_points');
             % the distance between mean of source and target as the point distance 
             data00=importdata('Initial_Data\inital_source_points.txt');
+            data01=importdata('target_points.txt');
             O1=mean(data00)';
-            O2=mean(data02(:,1:3))';
+            O2=mean(data01(:,1:3))';
             d=norm(O1-O2);
             O1=T1*T0*O1;
             T=T1*T0;
+%             T1
             %% Add Gaussian Noise
-            for i=1:length(source_points(1,:)) 
-                source_points(:,i)=source_points(:,i)+noise*rand(3,1);
-            end
-            for i=1:length(target_points(1,:))
-                target_points(:,i)=target_points(:,i)+noise*rand(3,1);
-            end
+%             for i=1:length(source_points(1,:)) 
+%                 source_points(:,i)=source_points(:,i)+normrnd(0,noise,3,1);
+%             end
+%             for i=1:length(target_points(1,:))
+%                 target_points(:,i)=target_points(:,i)+normrnd(0,noise,3,1);
+%             end
+%             source_points=[source_points;source_normals];
+%             target_points=[target_points;target_normals];
+%             source_name=sprintf(['bladeData\\','%d%d_source.mat'],ni,ri);
+%             target_name=sprintf(['bladeData\\','%d%d_target.mat'],ni,ri);
+%             save(source_name,"source_points");
+%             save(target_name,"target_points");
+%             source_pts=pointCloud(single(source_points)');
+%             target_pts=pointCloud(single(target_points)');
+%             target_pts.Normal=single(target_normals)';
+%             File='D:\\OneDrive\\DoctorPaper\\Manuscript\\pc_icp\\code\\Fast Robust ICP\\Fast-Robust-ICP\\build\\data\\inputdata\\';
+%             source_name=sprintf([File,'%d%d.ply'],ni,ri);
+%             target_name=sprintf([File,'%d%d_target.ply'],ni,ri);
+%             pcwrite(source_pts,source_name);
+%             pcwrite(target_pts,target_name);
+            source_points=T1*source_points;
+            source_normals=T1.SO3*source_normals;
             %% ICP 
             J=@disFnc_jacobian_res;
-            tau2=0.02;
-    %         [T2,er_vec,et_vec,rmse,method]=GDCLiftedICP(source_points,target_points,target_normals, ...
-    %                                         O1,O2,d,noise,...
-    %                                         J,tau2,max_icp, ...
-    %                                         disType,robType,T);
-%             [T2,er_vec,et_vec,rmse,method]=liftedICP(source_points,source_normals,target_points,target_normals, ...
-%                                             J,tau2,max_icp, ...
-%                                             disType,robType,T);
+%     
+            tau2=100 ;
+%             tau2=tau2_vec(6-ni);
+            [T2,er_vec,et_vec,rmse,method]=GDCLiftedICP(source_points,target_points,target_normals, ...
+                                            O1,O2,d,noise ,...
+                                            J,tau2,max_icp, ...
+                                            disType,robType,T);
+            [T2,er_vec,et_vec,rmse1,method]=liftedICP(source_points,source_normals,target_points,target_normals, ...
+                                            J,tau2,max_icp, ...
+                                            disType,robType,T);
+            rmse(50)
+            rmse1(50)
 %             [T2,er_vec,et_vec,rmse,method]=RSICP(source_points,target_points,source_normals,target_normals,max_icp,T);
-            [T2,er_vec,et_vec,rmse,method]=SparsePointToPoint(source_points,target_points,max_icp,20,5,0.4,T1*T0);
+    %         [T2,er_vec,et_vec,rmse,method]=SparsePointToPoint(source_points,target_points,max_icp,20,5,0.4,T1*T0);
 %             [T2,er_vec,et_vec,rmse,method]=SparsePointToPlane(source_points,target_points,target_normals,max_icp,20,5,0.1,T);
-%             [T2,er_vec,et_vec,rmse,method]=SparseWeightedDistance(source_points,target_points,target_normals,max_icp,20,5,0.1,T);
-            result.method=method;
-            result.noise=noise;  
-            result.ratio=ratio;
-            result.rmse=rmse;
-            result.T=T2;
-            result.er_vec=er_vec;
-            result.et_vec=et_vec;
-            result_name=sprintf([method,'_%d_%d'],ri,ni);
-            assignin('base',result_name,result);
-            save(['bladeData\\resultData\\',result_name,'.mat'],result_name);
+%             [T2,er_vec,et_vec,rmse,method]=SparseWeightedDistance(source_points,target_points,target_normals,max_icp,20,5,0.05,T);
+%             result.method=method;
+%             result.noise=noise;  
+%             result.ratio=ratio;
+%             result.rmse=rmse;
+%             result.T=T2;
+%             result.er_vec=er_vec;
+%             result.et_vec=et_vec;
+%             result_name=sprintf([method,'_%d_%d'],ri,ni);
+%             assignin('base',result_name,result);
+%             save(['bladeData\\resultData\\',result_name,'.mat'],result_name);
         end
     end
-    fprintf('finish!')
-    figure
-    axis off
-    hold on
-    move_points=T2*source_points;
-    plot3(move_points(1,:),move_points(2,:),move_points(3,:),'.','MarkerSize',3,'Color','red');
-%     plot3(source_points(1,:),source_points(2,:),source_points(3,:),'.','MarkerSize',2,'Color','red');
-    hp=plot3(target_points(1,:),target_points(2,:),target_points(3,:),'.','MarkerSize',3,'Color','#6577B0');
-    view(37.8000,67.3809);
+fprintf('finish!')
+figure
+axis off
+hold on
+move_points=T2*source_points;
+plot3(move_points(1,:),move_points(2,:),move_points(3,:),'.','MarkerSize',3,'Color','red');
+% plot3(source_points(1,:),source_points(2,:),source_points(3,:),'.','MarkerSize',2,'Color','red');
+hp=plot3(target_points(1,:),target_points(2,:),target_points(3,:),'.','MarkerSize',3,'Color','#6577B0');
 end

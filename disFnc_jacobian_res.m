@@ -9,7 +9,7 @@ switch method
         J=[ni;1]'*hat;
         res=(pi-qi)'*ni;
     case 'symmetric'
-        ci = cross(pi,ni);
+        ci = cross(pi+qi,ni);
         J=[ci', ni'];
         res=(pi-qi)'*ni;
 end
