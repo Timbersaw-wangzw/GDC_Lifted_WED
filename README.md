@@ -1,5 +1,5 @@
 
-# Robust Registration Of Featureless Point Clouds  With Geometry Distance Constraint
+# GDC-WED: A Novel Method for Featureless Point Cloud Registration using Geometry Distance Constraints and Weighted Enhanced Distance
 This repository includes the source code of the paper Robust Registration Of Featureless Point Clouds With Geometry Distance Constraint.
 This code was written in MATLAB.
 # Introduction and Usage
