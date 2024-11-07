@@ -4,13 +4,14 @@ clear
 addpath('github_repo');
 addpath('RSICP-master');
 addpath("RotorData");
-scene='OGVData';
+addpath("OGVdata");
+scene='OGVdata';
 % scene='RotorData';
 %% real point clouds of OGV
 load([scene,'\\test_points.mat']);
 load([scene,'\\target_points.mat']);
 load([scene,'\\coarse_matrix.mat']);
-if strcmp(scene,'OGVData')
+if strcmp(scene,'OGVdata')
     % O1 and O2 are ball center from source and target point clouds
     O1=T1*[85.581;129.744;894.246];
     O2=[20.949;139.022;891.872];
@@ -46,10 +47,10 @@ disType='WED';
 % disType='point_to_point';
 robType='Geman_McClure';
 % GDC methods
-% [T2,~,~,~,method]=GDCLiftedICP(source_points,target_points,target_normals, ...
-%                                 O1,O2,d,1e-6,...
-%                                 J,tau2,max_icp, ...
-%                                 disType,robType);
+[T2,~,~,~,method]=GDCLiftedICP(source_points,target_points,target_normals, ...
+                                O1,O2,d,1e-6,...
+                                J,tau2,max_icp, ...
+                                disType,robType);
 % robust symmetric 
 % [T2,~,~,~,method]=RSICP(source_points,target_points,source_normals,target_normals,100);
 % 
@@ -68,12 +69,12 @@ robType='Geman_McClure';
 % result.T=T2;
 % assignin('base',method,result);
 % save([scene,'\resultData\',method,'.mat'],method);
-T2=SE3([     0.990972     0.134064  -0.00146988      20.6146;
-   -0.134069     0.990813   -0.0177415     0.742839;
--0.000922131    0.0177784     0.999842      2.77858;
-           0            0            0            1;
-
-]);
+% T2=SE3([     0.990972     0.134064  -0.00146988      20.6146;
+%    -0.134069     0.990813   -0.0177415     0.742839;
+% -0.000922131    0.0177784     0.999842      2.77858;
+%            0            0            0            1;
+% 
+% ]);
 move_points=T2*source_points;
 %% plot results
 figure
@@ -82,8 +83,8 @@ hold on
 % plot3(source_points(1,:),source_points(2,:),source_points(3,:),'r.','MarkerSize',2.5);
 plot3(target_points(1,:),target_points(2,:),target_points(3,:),'.','MarkerSize',3,'Color','#6577B0');
 % % OGV O1 and O2
-O1=T1*[85.581;129.744;894.246];
-O2=[20.949;139.022;891.872];
+% O1=T1*[85.581;129.744;894.246];
+% O2=[20.949;139.022;891.872];
 % rotor O1 and O2
 % O1=T1*[-53.61;68.168;508.840];
 % O2=[-2.339;68.327;499.334];

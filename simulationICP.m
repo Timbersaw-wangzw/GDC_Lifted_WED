@@ -7,8 +7,8 @@ addpath('Initial_Data\')
 addpath('OGVdata\')
 addpath('bladeData\')
 addpath('RSICP-master\')
-scene='cylinderData';
-% scene='bladeData';
+% scene='cylinderData';
+scene='bladeData';
 %% simulation: generate cyclinder Data
 if strcmp(scene,'cylinderData')
     load('cylinderData\target_points.mat');
@@ -66,10 +66,6 @@ if strcmp(scene,'cylinderData')
     view(22,31)
 %     view(0,0)
 end
-% source_points=[source_points;source_normals];
-% target_points=[target_points;target_normals];
-% save("cylinderData\\source_points.mat","source_points");
-% save("cylinderData\\target_points.mat","target_points");
 %% simulation: generate blade data
 if strcmp(scene,'bladeData')
     noise_vec=[0.001,0.0025,0.005,0.01,0.015];
@@ -113,58 +109,24 @@ if strcmp(scene,'bladeData')
             d=norm(O1-O2);
             O1=T1*T0*O1;
             T=T1*T0;
-%             T1
-            %% Add Gaussian Noise
-%             for i=1:length(source_points(1,:)) 
-%                 source_points(:,i)=source_points(:,i)+normrnd(0,noise,3,1);
-%             end
-%             for i=1:length(target_points(1,:))
-%                 target_points(:,i)=target_points(:,i)+normrnd(0,noise,3,1);
-%             end
-%             source_points=[source_points;source_normals];
-%             target_points=[target_points;target_normals];
-%             source_name=sprintf(['bladeData\\','%d%d_source.mat'],ni,ri);
-%             target_name=sprintf(['bladeData\\','%d%d_target.mat'],ni,ri);
-%             save(source_name,"source_points");
-%             save(target_name,"target_points");
-%             source_pts=pointCloud(single(source_points)');
-%             target_pts=pointCloud(single(target_points)');
-%             target_pts.Normal=single(target_normals)';
-%             File='D:\\OneDrive\\DoctorPaper\\Manuscript\\pc_icp\\code\\Fast Robust ICP\\Fast-Robust-ICP\\build\\data\\inputdata\\';
-%             source_name=sprintf([File,'%d%d.ply'],ni,ri);
-%             target_name=sprintf([File,'%d%d_target.ply'],ni,ri);
-%             pcwrite(source_pts,source_name);
-%             pcwrite(target_pts,target_name);
             source_points=T1*source_points;
             source_normals=T1.SO3*source_normals;
             %% ICP 
             J=@disFnc_jacobian_res;
 %     
-            tau2=100 ;
+            tau2=10 ;
 %             tau2=tau2_vec(6-ni);
             [T2,er_vec,et_vec,rmse,method]=GDCLiftedICP(source_points,target_points,target_normals, ...
-                                            O1,O2,d,noise ,...
+                                            O1,O2,d,1e-4 ,...
                                             J,tau2,max_icp, ...
                                             disType,robType,T);
-            [T2,er_vec,et_vec,rmse1,method]=liftedICP(source_points,source_normals,target_points,target_normals, ...
-                                            J,tau2,max_icp, ...
-                                            disType,robType,T);
-            rmse(50)
-            rmse1(50)
+%             [T2,er_vec,et_vec,rmse1,method]=liftedICP(source_points,source_normals,target_points,target_normals, ...
+%                                             J,tau2,max_icp, ...
+%                                             disType,robType,T);
 %             [T2,er_vec,et_vec,rmse,method]=RSICP(source_points,target_points,source_normals,target_normals,max_icp,T);
     %         [T2,er_vec,et_vec,rmse,method]=SparsePointToPoint(source_points,target_points,max_icp,20,5,0.4,T1*T0);
 %             [T2,er_vec,et_vec,rmse,method]=SparsePointToPlane(source_points,target_points,target_normals,max_icp,20,5,0.1,T);
 %             [T2,er_vec,et_vec,rmse,method]=SparseWeightedDistance(source_points,target_points,target_normals,max_icp,20,5,0.05,T);
-%             result.method=method;
-%             result.noise=noise;  
-%             result.ratio=ratio;
-%             result.rmse=rmse;
-%             result.T=T2;
-%             result.er_vec=er_vec;
-%             result.et_vec=et_vec;
-%             result_name=sprintf([method,'_%d_%d'],ri,ni);
-%             assignin('base',result_name,result);
-%             save(['bladeData\\resultData\\',result_name,'.mat'],result_name);
         end
     end
 fprintf('finish!')

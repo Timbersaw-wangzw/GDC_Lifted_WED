@@ -57,11 +57,12 @@ for icp=1:max_icp
             [A,b]=Lifted_Rep(move_points,match_points,match_normals,J,tau2,disType,robType);
             A0=w_pTp*A(1:6,1:6)+w_pTpln*A(1:6,7:12);
             b0=w_pTp*b(:,1)+w_pTpln*b(:,2);
+%             A0=A0+1e-6*eye(6);
         end
         A1=dotVec(O1);
         b1=[O1-O2;0];
         new_d=norm(b1);
-        if abs(norm(O1-O2)-d)<1.2
+        if abs(norm(O1-O2)-d)<0.01
             lb=d-tol-delta;
         else
             lb_d=inital_d+icp*ratio;
@@ -88,7 +89,7 @@ for icp=1:max_icp
         T=T1*T;
         move_points=T1*move_points;
         O1=T1*O1;
-        fprintf('constraints:%e\n',norm(O1-O2)-d)
+%         fprintf('constraints:%e\n',norm(O1-O2)-d)
         e2=norm(T1.double()-eye(4),"fro");
         if(e2<1e-5)
             break;
@@ -113,7 +114,9 @@ for icp=1:max_icp
     if(mod(icp,2)==0)
         tau2=tau2/2;
     end
-
+    if e1<1e-6
+        break;
+    end
 end
 fprintf("constraints error is:%e\n",norm(O1-O2)-d);
 if isSimulation
