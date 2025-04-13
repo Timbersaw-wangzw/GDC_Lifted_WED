@@ -2,7 +2,6 @@ SparsePointToPlane1.m
 SparsePointToPlaneGN.m
 coarse_source_points.txt
 coarse_source_points0.67.txt
-target_points.mat
 target_normals.mat
 source_points.mat
 coarse_matrix.m
