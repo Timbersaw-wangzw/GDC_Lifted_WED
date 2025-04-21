@@ -4,7 +4,11 @@ function hat=dotVec(v)
 % OUTPUT:
 %   hat:4x6 matrix
 hat=zeros(4,6);
-hat(1:3,1:3)=eye(3);
+if length(v)==3
+    hat(1:3,1:3)=eye(3);
+else
+    hat(1:3,1:3)=v(4)*eye(3);
+end
 sysm=zeros(3,3);
 sysm(1,2)=-1*v(3);
 sysm(1,3)=v(2);
